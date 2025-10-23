@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- 📊 Attendance Summary Section -->
+<div class="container mt-4">
+  <h3 class="text-info text-center mb-3">📊 Attendance Summary</h3>
+<!-- 🧠 AI Insight Panel -->
+<div class="alert alert-{{ ai_color }} text-center fw-semibold shadow-sm">
+  {{ ai_message }}
+</div>
+
+  <div class="row text-center">
+    <div class="col-md-4 mb-3">
+      <div class="card bg-primary text-white shadow">
+        <div class="card-body">
+          <h5>Late Students Today</h5>
+          <h3>{{ today_count }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card bg-secondary text-white shadow">
+        <div class="card-body">
+          <h5>Yesterday</h5>
+          <h3>{{ yesterday_count }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card bg-dark text-white shadow">
+        <div class="card-body">
+          <h5>Day Before Yesterday</h5>
+          <h3>{{ day_before_yesterday_count }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Late Students Today Table -->
+  {% if today_records %}
+  <div class="mt-4">
+    <h5 class="text-dark">Students Late Today:</h5>
+    <table class="table table-bordered table-striped align-middle text-center">
+      <thead class="table-dark">
+        <tr>
+          <th>Admission No</th>
+          <th>Name</th>
+          <th>Time</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in today_records %}
+        <tr>
+          <td>{{ r.admission_no }}</td>
+          <td>{{ r.student_name }}</td>
+          <td>{{ r.time.strftime('%H:%M:%S') }}</td>
+          <td>{{ r.reason }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-success text-center mt-3">
+    🎉 No late students marked today!
+  </div>
+  {% endif %}
+</div>
+
+<!-- 🕒 Mark Late Students Section -->
+<div class="container mt-5">
+  <h3 class="text-primary mb-3 text-center">🕒 Mark Late Students</h3>
+
+  <!-- 🔍 Filter Section -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-4">
+          <input type="text" id="searchBox" class="form-control" placeholder="Search by name or admission no...">
+        </div>
+        <div class="col-md-4">
+          <select id="classFilter" class="form-select">
+            <option value="">All Classes</option>
+            {% for c in students|map(attribute='class_')|unique %}
+            <option value="{{ c }}">{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4 text-end">
+          <button class="btn btn-outline-secondary" id="clearFilters">Clear Filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Bulk Marking Table -->
+  <form method="POST" action="{{ url_for('mark_late_bulk') }}">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="studentsTable" class="table table-bordered table-striped align-middle text-center">
+            <thead class="table-dark">
+              <tr>
+                <th>Select</th>
+                <th>Admission No</th>
+                <th>Student Name</th>
+                <th>Class</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in students %}
+              <tr>
+                <td><input type="checkbox" name="selected_students" value="{{ s.admission_no }}"></td>
+                <td>{{ s.admission_no }}</td>
+                <td>{{ s.student_name }}</td>
+                <td>{{ s.class_ }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mb-3 mt-3">
+          <label for="reason" class="form-label fw-bold">Reason for being late:</label>
+
+<div class="input-group">
+  <select id="reasonSelect" class="form-select" style="max-width: 200px;">
+    <option value="">Choose...</option>
+    <option value="Traffic">Traffic</option>
+    <option value="Missed Bus">Missed Bus</option>
+    <option value="Overslept">Overslept</option>
+    <option value="Weather Delay">Weather Delay</option>
+    <option value="Other">Other</option>
+  </select>
+  <input type="text" id="reason" name="reason" class="form-control" placeholder="Enter custom reason" required>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const select = document.getElementById("reasonSelect");
+  const input = document.getElementById("reason");
+
+  select.addEventListener("change", function() {
+    if (this.value === "Other" || this.value === "") {
+      input.value = "";
+      input.disabled = false;
+      input.placeholder = "Enter custom reason";
+    } else {
+      input.value = this.value;
+      input.disabled = true;
+    }
+  });
+});
+</script>
+
+        </div>
+
+        <div class="text-center">
+          <button type="submit" class="btn btn-success px-4">✅ Mark Selected as Late</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- 📈 Weekly Trend Chart -->
+<div class="container mt-5">
+  <h4 class="text-center text-primary mb-3">📈 Weekly Late Marking Trend</h4>
+  <div id="trend-chart" class="bg-white p-3 shadow rounded"></div>
+</div>
+<!-- Plotly Script -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+  var dates = {{ dates|tojson }};
+  var counts = {{ counts|tojson }};
+
+  // Format dates nicely (e.g., "Oct 20")
+  var formattedDates = dates.map(d => {
+    let dateObj = new Date(d);
+    return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+
+  // --- Build segmented traces ---
+  var traces = [];
+  for (let i = 0; i < counts.length - 1; i++) {
+    let color = counts[i + 1] < counts[i] ? '#28a745' : (counts[i + 1] > counts[i] ? '#dc3545' : '#007bff');
+
+    traces.push({
+      x: [formattedDates[i], formattedDates[i + 1]],
+      y: [counts[i], counts[i + 1]],
+      type: 'scatter',
+      mode: 'lines+markers',
+      line: { color: color, width: 3 },
+      marker: { color: color, size: 8 },
+      name: (counts[i + 1] < counts[i]) ? 'Improved' : (counts[i + 1] > counts[i]) ? 'Declined' : 'No Change',
+      hovertemplate: `<b>%{x}</b><br>Late Students: %{y}<extra></extra>`
+    });
+  }
+
+  // Add a single-point trace if only one data point
+  if (counts.length === 1) {
+    traces.push({
+      x: [formattedDates[0]],
+      y: [counts[0]],
+      type: 'scatter',
+      mode: 'markers',
+      marker: { color: '#007bff', size: 10 },
+      name: 'Data Point'
+    });
+  }
+
+  var layout = {
+    title: { text: '📊 Weekly Late Marking Trend (Green = Better, Red = Worse)', font: { size: 18, color: '#333' } },
+    xaxis: { title: 'Date', tickangle: -45, showgrid: true },
+    yaxis: { title: 'Late Students', rangemode: 'tozero', dtick: 1 },
+    margin: { t: 60, l: 50, r: 30, b: 80 },
+    height: 400,
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    showlegend: true,
+    legend: { orientation: "h", y: -0.3 }
+  };
+
+  var config = { responsive: true, displayModeBar: false };
+
+  Plotly.newPlot('trend-chart', traces, layout, config);
+</script>
+<div class="container mt-5">
+  <h4 class="text-danger text-center mb-3">⚠ Frequent Latecomers (This Week)</h4>
+
+  {% if repeat_offenders %}
+    <ul class="list-group shadow-sm">
+      {% for s, count in repeat_offenders %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <strong>{{ s }}</strong>
+          <span class="badge bg-danger rounded-pill">{{ count }} times</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-success text-center mt-3">
+      🎉 No repeat offenders this week!
+    </div>
+  {% endif %}
+</div>
+
+<!-- 📜 Recent Late Records -->
+<div class="container mt-5">
+  <h4 class="text-secondary text-center mb-3">📜 Recent Late Records</h4>
+  <table class="table table-sm table-bordered table-striped align-middle text-center shadow">
+    <thead class="table-light">
+      <tr>
+        <th>Adm No</th>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in recent %}
+      <tr>
+        <td>{{ r.admission_no }}</td>
+        <td>{{ r.student_name }}</td>
+        <td>{{ r.date }}</td>
+        <td>{{ r.time.strftime('%H:%M:%S') }}</td>
+        <td>{{ r.reason }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="text-center mt-3">
+    <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+  </div><br>
+</div>
+
+<!-- 🧩 Search + Filter Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const searchBox = document.getElementById("searchBox");
+  const classFilter = document.getElementById("classFilter");
+  const clearFilters = document.getElementById("clearFilters");
+  const rows = document.querySelectorAll("#studentsTable tbody tr");
+
+  function filterTable() {
+    const searchValue = searchBox.value.toLowerCase();
+    const classValue = classFilter.value.toLowerCase();
+
+    rows.forEach(row => {
+      const adm = row.children[1].textContent.toLowerCase();
+      const name = row.children[2].textContent.toLowerCase();
+      const className = row.children[3].textContent.toLowerCase();
+
+      const matchesSearch = name.includes(searchValue) || adm.includes(searchValue);
+      const matchesClass = classValue === "" || className === classValue;
+
+      row.style.display = (matchesSearch && matchesClass) ? "" : "none";
+    });
+  }
+
+  searchBox.addEventListener("keyup", filterTable);
+  classFilter.addEventListener("change", filterTable);
+  clearFilters.addEventListener("click", () => {
+    searchBox.value = "";
+    classFilter.value = "";
+    filterTable();
+  });
+});
+</script>
+
+{% endblock %}

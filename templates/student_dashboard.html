@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+  <h3 class="text-center text-primary mb-4">🎓 Welcome, {{ current_user.username }}</h3>
+
+  <!-- Summary Cards -->
+  <div class="row text-center mb-4">
+    <div class="col-md-4">
+      <div class="card bg-info text-white shadow-sm">
+        <div class="card-body">
+          <h6>Total Late Days</h6>
+          <h3>{{ total_late }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-warning text-white shadow-sm">
+        <div class="card-body">
+          <h6>This Month</h6>
+          <h3>{{ late_this_month }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-success text-white shadow-sm">
+        <div class="card-body">
+          <h6>Best On-time Streak</h6>
+          <h3>{{ best_streak }} days</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Message -->
+  <div class="alert alert-{{ ai_color }} text-center shadow-sm">
+    {{ ai_message }}
+  </div>
+
+
+  <!-- Late History Table -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="text-secondary mb-3 text-center">🕒 My Late Attendance Records</h5>
+      {% if records %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in records %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ r.date }}</td>
+              <td>🕒 {{ r.time.strftime('%H:%M:%S') }}</td>
+              <td>{{ r.reason }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="alert alert-success text-center">🎉 You have perfect attendance!</div>
+      {% endif %}
+    </div>
+  </div>
+<!-- Trend Chart -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="text-primary mb-3 text-center">📈 My Lateness History</h5>
+      <div id="trend-chart"></div>
+    </div>
+  </div>
+  <!-- Motivation Tip -->
+  <div class="alert alert-info text-center shadow-sm">
+    💬 <strong>Tip of the Day:</strong> {{ daily_tip }}
+  </div>
+
+  <!-- Logout -->
+  <div class="text-center mt-3">
+    <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a><br><br>
+  </div>
+</div>
+
+<!-- Plotly Chart Script -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+  var dates = {{ dates|tojson }};
+  var counts = {{ counts|tojson }};
+
+  var trace = {
+    x: dates,
+    y: counts,
+    type: 'scatter',
+    mode: 'lines+markers',
+    line: { shape: 'spline', color: '#007bff', width: 3 },
+    marker: { size: 8 }
+  };
+
+  var layout = {
+    xaxis: { title: 'Date' },
+    yaxis: { title: 'Late Count', dtick: 1 },
+    margin: { t: 30 },
+    plot_bgcolor: '#f8f9fa',
+    paper_bgcolor: '#f8f9fa'
+  };
+
+  Plotly.newPlot('trend-chart', [trace], layout);
+</script>
+
+{% endblock %}
