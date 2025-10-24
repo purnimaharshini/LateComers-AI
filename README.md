@@ -76,6 +76,8 @@ MAIL_USE_TLS=True
 5️⃣ Run the application
 python app.py
 
+⚠️ Note: Create your own .env file with your credentials.
+This project does not include any real secrets or emails for security reasons.
 
 Visit 👉 http://127.0.0.1:5000
 
