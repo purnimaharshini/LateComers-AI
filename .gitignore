@@ -11,6 +11,7 @@ venv/
 *.sqlite3
 database/
 school.db
+init_db.py
 
 # IDE
 .vscode/
@@ -20,4 +21,4 @@ school.db
 # OS
 .DS_Store
 Thumbs.db
-init_db.py
+
