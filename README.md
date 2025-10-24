@@ -1,4 +1,7 @@
-    
+ 🌐 **Live Demo:** [Coming Soon](###)
+ 
+🔗 **View Code | 🧠 Built with Flask, MySQL & AI Insights**
+
 #      🕒 Latecomers Attendance Management System
 
 An intelligent, AI-enhanced web platform built with **Flask (Python)** that automates tracking of late student arrivals, improves teacher productivity, and strengthens parent-school communication through **real-time notifications and analytics dashboards**.
@@ -51,9 +54,8 @@ An intelligent, AI-enhanced web platform built with **Flask (Python)** that auto
 ---
 
 ## ⚙️ Installation & Setup:
-
-### 1️⃣ Clone the repository
-```bash
+```
+1️⃣ Clone the repository
 git clone https://github.com/purnimaharshini/latecomers_web.git
 cd latecomers_web
 
@@ -80,56 +82,59 @@ python app.py
 This project does not include any real secrets or emails for security reasons.
 
 Visit 👉 http://127.0.0.1:5000
+```
+---
 
-👩‍🏫 Teacher View:
+## 🧭 Dashboards Overview
 
-Daily and weekly late trend charts
+### 👩‍🏫 Teacher View
+- Mark students late (bulk or single)
+- Attendance charts (daily + weekly)
+- Repeat offender summary
+- AI punctuality insights and tips  
 
-Repeat offenders list
+### 🧑‍💼 Admin View
+- Class-wise lateness summary
+- AI-driven student risk detection
+- Data export (CSV/PDF)
+- Weekly lateness trend visualization  
 
-Quick search and filter tools
+---
 
-🧑‍💼 Admin View:
+## 💡 Future Enhancements
+- SMS alerts to parents (Twilio Integration)
+- Mobile-friendly **Progressive Web App (PWA)**
+- Predictive analytics using ML models
+- Integration with **student performance profiles**
 
-Class-wise risk ranking
+---
 
-Late reason analysis
+## 👩‍💻 Author
 
-Export tools for reports (CSV, PDF)
+**Purnima Harshini**  
+🎓 *B.Tech – Final Year (2026 Batch)*  
+💡 Passionate about **AI-driven educational tools** & **full-stack development**
 
-💡 Future Enhancements:
-
-SMS notifications to parents
-
-Mobile-friendly PWA design
-
-Attendance prediction using ML
-
-Student profile performance integration
-
-
-
-🧑‍💻 Author
-
-Purnima Harshini
-B.Tech – Final Year (2026 Batch)
-📍 Passionate about AI-driven educational tools and full-stack development
+---
 
 ## 🎥 Demo Video & Screenshots
 
-### 🎬 Project Walkthrough (Demo Video)
-🔗 [Watch Demo on YouTube](https://youtu.be/your-demo-link)  
-*(Upload your screen recording — even a 2–3 min walkthrough showing teacher, student, and admin views is perfect.)*
+### 🎬 Demo Video  
+🔗 [Watch Demo on YouTube](https://youtu.be/your-demo-link)
+
+---
 
 ### 🖼️ Screenshots
 
 | Dashboard | Description |
 |------------|-------------|
-| ![Teacher Dashboard]     (static/images/teacher_dashboard.png) | Teacher can mark students late, view trends & repeat offenders |
-| ![Admin Dashboard]       (static/images/admin_dashboard.png) | Admin can analyze lateness data, generate AI risk reports & export |
-| ![Student Dashboard]     (static/images/student_dashboard.png) | Students can track their own attendance & lateness history |
-| ![Login Page]            (static/images/login_page.png) | Simple and secure login interface |
+| ![Teacher Dashboard](static/images/teacher_dashboard.png) | Mark late students, view attendance trends & repeat offenders |
+| ![Admin Dashboard](static/images/admin_dashboard.png) | Analyze lateness data, generate AI reports & export results |
+| ![Student Dashboard](static/images/student_dashboard.png) | Track personal attendance & lateness history |
+| ![Login Page](static/images/login_page.png) | Secure login for students, teachers & admins |
 
-🧾 License
+---
 
-This project is open-source and available for educational and portfolio use.
+## 🧾 License
+This project is **open-source** and available for **educational and portfolio use**.  
+© 2025 **LateComers.ai | Built by Purnima Harshini**
