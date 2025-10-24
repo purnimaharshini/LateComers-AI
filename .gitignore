@@ -20,3 +20,4 @@ school.db
 # OS
 .DS_Store
 Thumbs.db
+init_db.py
