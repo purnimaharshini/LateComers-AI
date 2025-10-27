@@ -11,13 +11,14 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # --- Environment ---
-    FLASK_ENV = os.getenv("FLASK_ENV", "development")
+    FLASK_ENV = os.getenv("FLASK_ENV", "production")
 
     # --- Email Config ---
-    EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-    EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
-    EMAIL_USER = os.getenv("EMAIL_USER")
-    EMAIL_PASS = os.getenv("EMAIL_PASS")
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
+    MAIL_USE_TLS = os.getenv("MAIL_USE_TLS", "True").lower() == "true"
+    MAIL_USER = os.getenv("MAIL_USER")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 
     # --- Twilio SMS Config ---
     TWILIO_SID = os.getenv("TWILIO_SID")
