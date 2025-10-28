@@ -3,7 +3,7 @@ Flask-Bcrypt==1.0.1
 Flask-Login==0.6.3
 Flask-SQLAlchemy==3.1.1
 python-dotenv==1.1.1
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.11
 mysql-connector-python==9.4.0
 plotly==6.3.1
 twilio==9.8.0
