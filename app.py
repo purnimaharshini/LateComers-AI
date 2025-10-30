@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
-
+from app import db
 # Load .env first
 load_dotenv()
 
@@ -15,6 +15,12 @@ app.config.from_object('config.Config')
 
 # Initialize extensions
 db = SQLAlchemy(app)
+# --- TEMPORARY: Create tables automatically on startup ---
+with app.app_context():
+    from models import User  # import all your models here
+    db.create_all()
+    print("✅ Database tables created successfully (if not existing)")
+
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
@@ -22,11 +28,6 @@ login_manager.login_message_category = "info"
 
 # Import routes after initializing app & db
 import routes
-from app import db
-
-# ✅ Create tables automatically on startup (only if not existing)
-with app.app_context():
-    db.create_all()
 
 if __name__ == "__main__":
     app.run(debug=True)
