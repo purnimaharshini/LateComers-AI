@@ -22,6 +22,11 @@ login_manager.login_message_category = "info"
 
 # Import routes after initializing app & db
 import routes
+from app import db
+
+# ✅ Create tables automatically on startup (only if not existing)
+with app.app_context():
+    db.create_all()
 
 if __name__ == "__main__":
     app.run(debug=True)
